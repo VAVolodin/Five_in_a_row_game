@@ -106,3 +106,25 @@
             // alert(`target = ${this.tagName} \n number = ${ event.target.className}` );
         
         }
+
+        /*
+        every time should checking the presence of neighbors (8) at the next move/click
+
+---- the board's copy in a matrix needed instead (don't forget create it,  Winnie-ther-Pooh =) )
+---- change items' indexing
+
+checking neighbors at:*/
+  if (y>0 && board[x][y-1] != 0) return true;            // Left:
+  if (y+1 < boardSize && board[x][y+1] !=0) return true; // Right
+
+if (x > 0) {
+    if (board[x - 1][y] != 0) return true;              // Top
+    if (y > 0 && board[x - 1][y - 1] != 0) return true; // Left - Top
+    if (y + 1 < boardSize && board[x - 1][y + 1] != 0) return true; // Right - Top
+}
+
+if (x + 1 < boardSize) {
+    if (board[x + 1][y] != 0) return true;               // Bottom
+    if (y > 0 && board[x + 1][y - 1] != 0) return true; // Left - Bottom
+    if (y < boardSize && board[x + 1][y + 1] != 0) return true; // Right - Bottom
+}

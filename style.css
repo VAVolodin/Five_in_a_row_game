@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    outline: none;
+}
+
+body {
+    background: #fce3ff;
+    overflow: hidden;
+}
+
+header {
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    justify-content:space-evenly;
+    align-items:center;
+    border-bottom: 0.5em ridge  #bcafaf66;
+    margin: 1em 0 2em 0;
+}
+
+.header_nav-wrap {
+    max-width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+audio {
+    display: block;
+    height: 2em;
+    width: 14em;
+    border-radius: 2em;
+}
+
+.player_wrap select {
+    border-radius: 2em;
+    background: #f1f3f4;
+    text-align: center;
+    border: none;
+}
+
+.player_wrap,
+.next_move-wrap,
+.size_wrap{
+    height: 100%;
+    margin: 0 0.1vw;
+}
+.next_move-wrap img {
+    width: 10%;
+    margin-left: 0.3em;
+}
+
+.size_wrap select {
+    margin-left: 0.3em;
+    background: #f1f3f4;
+    border: none;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+}
+.size_wrap span{
+    display: block;
+}
+
+.header_item-border {
+    background: #f1f3f4;
+    border: 0.4em ridge #d39ce9;
+    border-radius: 2em;
+    box-shadow: #d39ce9 0 0 5px, #f3bdf9 0 0 10px, #f3bdf9 0 0 15px, #f3bdf9 0 0 20px;
+}
+.header_item-flex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.start_btn {
+    width: 20em;
+    height: 3em;
+    background: #d2c2fd;
+    border-radius: 0.3em;
+    border-color: #b39afd;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.board {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.board_border{
+    box-shadow: 0 0 0 0.5em  #babdbe;
+}
+
+.shakeAnim{
+    animation: shakeAnim 0.5s ease 0s 1 reverse forwards;
+}
+@keyframes shakeAnim {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+        transform-origin: 50% 0;
+    }
+
+    10% {
+        transform: rotate(2deg);
+    }
+
+    20%,
+    40%,
+    60% {
+        transform: rotate(-4deg);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: rotate(4deg);
+    }
+
+    80% {
+        transform: rotate(-2deg);
+    }
+
+    90% {
+        transform: rotate(2deg);
+    }
+}
+
+.box {
+    height: 6.35%;
+    width: 6.35%;
+    background: #fce3ff;
+    box-shadow: 0 0 0.5em #c44ed1 ;
+    animation: myAnim 0.5s ease 0s 1 normal forwards;
+}
+
+@keyframes myAnim {
+    0% {
+        opacity: 0;
+        transform:  scale(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.box:hover {
+    cursor: pointer;
+    box-shadow: 0 0 5em #a122af ;
+    background: #ddabe2;
+    /* transition: all 0.3s ease-out; */
+}
+
+
+.sink {
+    animation: sink 1s ease ;
+}
+
+
+@keyframes sink {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(100vh);
+    }
+}
+
+
+@media (max-width: 1199px) {
+    /* CSS для ширины от 992px до 1199px */
+  }
+  
+  /* md-размер (<=991px) */
+  @media (max-width: 991px) {
+    /* CSS для ширины от 768px до 991px */
+  }
+  
+  /* sm-размер (<=768px) */
+  @media (max-width: 767px) {
+    /* CSS для ширины от 576px до 767px */
+  }
+  
+  /* xs-размер (<=575px) */
+  @media (max-width: 575px) {
+    /* CSS для ширины до 575px (включительно) */
+  }

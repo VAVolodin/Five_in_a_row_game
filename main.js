@@ -1,130 +1,109 @@
-//  -- clear all --
-// document.write("")
-//let opened = window.open("");
+const header = document.querySelector("header");
+const btn = header.querySelector(".start_btn");
+const board = document.querySelector(".board");
+const nextMoveImage = header
+    .querySelector(".next_move-wrap")
+    .querySelector("img");
 
-        // clear document
-// document.body.innerHTML = "";
-        // create parent DOM
-        document.write(
-            '<html><head><link rel="shortcut icon" href="https://media.flaticon.com/dist/min/img/favicon.ico"/><title>Five in a row</title></head><body><header><h1>Five in a row gamE</h1><button>Let\'s start</button></header></body></html>'
-        );
-                // DOM styling
-        const header = document.querySelector("header");
-        header.style.display = "flex";
-        header.style.flexDirection = "column";
-        header.style.justifyContent = "space-around";
-        header.style.alignItems = "center";
-        header.style.borderBottom = "0.5em solid gray";
-        header.style.marginBottom = "2em";
-        header.parentNode.style.background = "#fce3ff";
-        
-        const btn = document.querySelector("button");
-        btn.style.width = "20em";
-        btn.style.height = "3em";
-        btn.style.background = "#d2c2fd";
-        btn.style.borderRadius = "0.3em";
-        btn.style.borderColor = "#b39afd";
-        btn.style.cursor = "pointer";
-        btn.style.marginBottom = "2em";
-        btn.style.fontWeight = "bold";
-        
-        const board = document.createElement("div");
-        board.style.margin = "0 auto";
-        board.style.display = "flex";
-        board.style.justifyContent = "space-evenly";
-        board.style.flexWrap = "wrap";
-        
-        btn.addEventListener("click", createDiv);
-        btn.addEventListener("click", btnActive);
-        board.addEventListener("click",tikTakEl);
-        
-                // timer for async function
-        const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+btn.addEventListener("click", createDiv);
+btn.addEventListener("click", btnActive);
 
-        let easy = 10,
-            normal = 15,
-            profi = 20
-            userMove =1;
-        
-                //creating a Board by immediately adding non-displayable boxes and smoothly bubbling it after that
-        async function createDiv(difficulty = normal) {
-            userMove = 1;
-            btn.removeEventListener("click", createDiv);
-            btn.textContent = "Restart"
-            let docWidth = document.documentElement.clientWidth;
-            let boardSize = docWidth > 1200 ? "67vh" : "53.4vw";
-            board.style.width = board.style.height =  boardSize;
-            document.body.appendChild(board);
+let userMove,
+    boardSize = null,
+    recordMoves = [];
 
-            for (let i = 1; i <= 225; i++) {
-                    addBox(i)
-            }
-                    //  bubbling
-            let boxes = Array.from(document.body.querySelector("div").querySelectorAll("div"))
-            for (let j = k = 0; j <= 0.5 ; k++, j += 0.5/(boxes.length-1)) {
-                boxes[k].style.opacity = `1`;
-                boxes[k].style.transition = "all 0.3s ease 0s";
-                board.style.boxShadow = `0 0 0 ${j}em  #babdbe`;
-                await timer(0.01);
-            }
-            btn.addEventListener("click", restart);
+//creating the game board
+function createDiv() {
+    boardSize = document.querySelector("#boardsize").value;
+    userMove = 1;
+    btn.removeEventListener("click", createDiv);
+    btn.textContent = "Restart";
+    let docWidth = document.documentElement.clientWidth;
+    let fieldSize = docWidth > 1200 ? 4.5 * boardSize + "vh" : "90vw";
+    board.style.width = board.style.height = fieldSize;
+    document.body.appendChild(board);
+
+    for (let x = 0; x <= boardSize - 1; x++) {
+        recordMoves[x] = [];
+        for (let y = 0; y <= boardSize - 1; y++) {
+            addBox(x, y);
+            recordMoves[x][y] = 0;
         }
-        
-        function addBox (number){
-            newDiv = document.createElement("div");
-            newDiv.style.height = "6%";
-            newDiv.style.width = "6%";
-            newDiv.style.margin = "0.3125%";
-            newDiv.style.background = "#fce3ff";
-            newDiv.style.boxShadow = "0 0 0.5em #c44ed1 ";
-            newDiv.style.opacity = "0";
-            newDiv.classList.add(number);
-            board.appendChild(newDiv);
-        }
-        
-        function restart() {
-            board.innerHTML = "";
-            board.remove();
-            board.style.boxShadow = "0 0 0 0";
-            btn.removeEventListener("click", restart);
-            createDiv();
-        }
-        
-        function btnActive(event) {
-            event.target.style.backgroundColor = "#0096a5";
-            setTimeout(() => {
-                event.target.style.backgroundColor = "#d2c2fd";
-            }, 10);
-        }
-        
-        function tikTakEl (event){
-            if (!event.target.className){alert("You miss pal! Let's try again."); return;}
-            const chip = new Image();
-            chip.src =  (userMove)? "green_chip.svg" : "red_chip.svg";
-            userMove = (userMove)? 0 : 1;
-            event.target.appendChild(chip)
-            // alert(`target = ${this.tagName} \n number = ${ event.target.className}` );
-        
-        }
+    }
 
-        /*
-        every time should checking the presence of neighbors (8) at the next move/click
-
----- the board's copy in a matrix needed instead (don't forget create it,  Winnie-ther-Pooh =) )
----- change items' indexing
-
-checking neighbors at:*/
-  if (y>0 && board[x][y-1] != 0) return true;            // Left:
-  if (y+1 < boardSize && board[x][y+1] !=0) return true; // Right
-
-if (x > 0) {
-    if (board[x - 1][y] != 0) return true;              // Top
-    if (y > 0 && board[x - 1][y - 1] != 0) return true; // Left - Top
-    if (y + 1 < boardSize && board[x - 1][y + 1] != 0) return true; // Right - Top
+    board.classList.add("board_border");
+    btn.addEventListener("click", restart);
+    board.addEventListener("click", tikTakEl);
 }
 
-if (x + 1 < boardSize) {
-    if (board[x + 1][y] != 0) return true;               // Bottom
-    if (y > 0 && board[x + 1][y - 1] != 0) return true; // Left - Bottom
-    if (y < boardSize && board[x + 1][y + 1] != 0) return true; // Right - Bottom
+function addBox(x, y) {
+    newDiv = document.createElement("div");
+    newDiv.setAttribute("id", `${x}.${y}`);
+    newDiv.classList.add("box");
+    board.appendChild(newDiv);
+}
+
+function restart() {
+    // clearing the board
+    btn.removeEventListener("click", restart);
+    board.removeEventListener("click", tikTakEl);
+    const chips = Array.from(board.querySelectorAll("img"));
+    chips.forEach((e) => e.classList.add("sink"));
+    board.classList.add("shakeAnim");
+    setTimeout(() => {
+        board.innerHTML = "";
+        board.classList.remove("board_border");
+        board.classList.remove("shakeAnim");
+        board.remove();
+        chips.forEach((e) => e.classList.remove("sink"));
+        createDiv();
+    }, 800);
+    // data clearing
+}
+
+function btnActive(event) {
+    event.target.style.backgroundColor = "#0096a5";
+    setTimeout(() => {
+        event.target.style.backgroundColor = "#d2c2fd";
+    }, 10);
+}
+
+function tikTakEl(e) {
+    e = e.target;
+    const chip = new Image();
+    if (!e.className || e.classList.contains("board")) {
+        alert("You miss pal! Let's try again.");
+        return;
+    }
+    let x = +e.id.split(".")[0];
+    let y = +e.id.split(".")[1];
+    recordMoves[x][y] = userMove;
+    chip.src = `chip${userMove}.svg`;
+    userMove = -1 * userMove;
+    e.appendChild(chip);
+    nextMoveImage.src = `chip${userMove}.svg`;
+    hasNeighbors(x, y);
+    // alert(`target = ${e.tagName} \n class = ${e.classList.contains("board")} \n x= ${x} y=${y}` );
+}
+
+// checking neighbors at:
+function hasNeighbors(x, y) {
+    if (y > 0 && recordMoves[x][y - 1] != 0) return console.log(true); // Left:
+    if (y + 1 < boardSize && recordMoves[x][y + 1] != 0)
+        return console.log(true); // Right
+
+    if (x > 0) {
+        if (recordMoves[x - 1][y] != 0) return console.log(true); // Top
+        if (y > 0 && recordMoves[x - 1][y - 1] != 0) return console.log(true); // Left - Top
+        if (y + 1 < boardSize && recordMoves[x - 1][y + 1] != 0)
+            return console.log(true); // Right - Top
+    }
+
+    if (x + 1 < boardSize) {
+        if (recordMoves[x + 1][y] != 0) return console.log(true); // Bottom
+        if (y > 0 && recordMoves[x + 1][y - 1] != 0) return console.log(true); // Left - Bottom
+        if (y + 1 < boardSize && recordMoves[x + 1][y + 1] != 0)
+            return console.log(true); // Right - Bottom
+    }
+    return console.log(false);
 }

@@ -1,20 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://www.svgrepo.com/show/90821/chessboard.svg"/>
+    <link rel="icon" href="https://www.svgrepo.com/show/90821/chessboard.svg" />
+    <link rel="stylesheet" href="style.css">
+    <title>Five in a row</title>
 </head>
-<body>
-    <audio preload="auto" controls autoplay muted src="https://str5.pcradio.ru/radiogameplay_ru-med"
-    style="        
-    display: block;
-    margin: 0 auto;
-    border-radius: 2em;
-    box-shadow: #f1f3f4 0 0 5px, #f1f3f4 0 0 10px, #f1f3f4 0 0 15px, #f1f3f4 0 0 20px;"
 
-    ></audio>
+<body>
+    <header>
+        <h1>Five in a row gamE</h1>
+        <div class="header_nav-wrap">
+            <div class="player_wrap header_item-border header_item-flex">
+                <select onchange="document.querySelector('audio').setAttribute('src',this.value)">
+                    <option value="https://str5.pcradio.ru/radiogameplay_ru-med">8-bit Game</option>
+                    <option value="https://str4.pcradio.ru/deepport_radio-med">Deep</option>
+                    <option value="https://str4.pcradio.ru/miamibeach_radio-med">Pop</option>
+                    <option value="https://str4.pcradio.ru/fm181_thebeat-med">Rap & RnB</option>
+                    <option value="https://pcradio.ru/radio/1fm-ottos-classical-music">Classic</option>
+                    <option value="https://str4.pcradio.ru/freeamericana_com-med">Country</option>
+                </select>
+                <audio preload="auto" controls autoplay muted
+                    src="https://str5.pcradio.ru/radiogameplay_ru-med"></audio>
+            </div>
+            <div class="next_move-wrap header_item-border header_item-flex"><p>Next move:</p><img src="chip1.svg" alt="Next move chip" ></div>
+
+            <div class="size_wrap header_item-border header_item-flex"><span>Select board size</span>
+                <select name="boardSize" id="boardsize">
+                    <option value="10">10</option>
+                    <option selected value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+        </div>
+        <button class="start_btn">Let's start</button>
+
+
+    </header>
+
+    <div class="board"></div>
+
     <script src="/main.js"></script>
 </body>
+
 </html>

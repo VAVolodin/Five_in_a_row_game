@@ -107,3 +107,14 @@ function hasNeighbors(x, y) {
     }
     return console.log(false);
 }
+
+// should checking winning position after every hasNeighbors calls
+// it's worth trying to combine neighbors in one collection for each direction row and  then compare it with each other, I think so
+// userMove = 1 or -1 => x or y maybe incrementing or decrementing by every user move
+function isWinPos (x,y,userMove){
+let i = 1,
+    j = 1;
+while (y + i< boardSize && recordMoves[x][y + i]){ i++ } // right position 
+while (y - j< boardSize && recordMoves[x][y - j]){ j++ } // left position
+
+}

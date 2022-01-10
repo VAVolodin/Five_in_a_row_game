@@ -82,39 +82,73 @@ function tikTakEl(e) {
     userMove = -1 * userMove;
     e.appendChild(chip);
     nextMoveImage.src = `chip${userMove}.svg`;
-    hasNeighbors(x, y);
+    // hasNeighbors(x, y);
+    isWinPos(x, y);
     // alert(`target = ${e.tagName} \n class = ${e.classList.contains("board")} \n x= ${x} y=${y}` );
 }
 
 // checking neighbors at:
 function hasNeighbors(x, y) {
-    if (y > 0 && recordMoves[x][y - 1] != 0) return console.log(true); // Left:
+    if (y > 0 && recordMoves[x][y - 1] != 0) return true; // Left:
     if (y + 1 < boardSize && recordMoves[x][y + 1] != 0)
-        return console.log(true); // Right
+        return true; // Right
 
     if (x > 0) {
-        if (recordMoves[x - 1][y] != 0) return console.log(true); // Top
-        if (y > 0 && recordMoves[x - 1][y - 1] != 0) return console.log(true); // Left - Top
+        if (recordMoves[x - 1][y] != 0) return true; // Top
+        if (y > 0 && recordMoves[x - 1][y - 1] != 0) return true; // Left - Top
         if (y + 1 < boardSize && recordMoves[x - 1][y + 1] != 0)
-            return console.log(true); // Right - Top
+            return true; // Right - Top
     }
 
     if (x + 1 < boardSize) {
-        if (recordMoves[x + 1][y] != 0) return console.log(true); // Bottom
-        if (y > 0 && recordMoves[x + 1][y - 1] != 0) return console.log(true); // Left - Bottom
+        if (recordMoves[x + 1][y] != 0) return true; // Bottom
+        if (y > 0 && recordMoves[x + 1][y - 1] != 0) return true; // Left - Bottom
         if (y + 1 < boardSize && recordMoves[x + 1][y + 1] != 0)
-            return console.log(true); // Right - Bottom
+            return true; // Right - Bottom
     }
-    return console.log(false);
+    return false;
 }
 
 // should checking winning position after every hasNeighbors calls
 // it's worth trying to combine neighbors in one collection for each direction row and  then compare it with each other, I think so
 // userMove = 1 or -1 => x or y maybe incrementing or decrementing by every user move
-function isWinPos (x,y,userMove){
-let i = 1,
-    j = 1;
-while (y + i< boardSize && recordMoves[x][y + i]){ i++ } // right position 
-while (y - j< boardSize && recordMoves[x][y - j]){ j++ } // left position
+function isWinPos(x, y) {
+    console.log(x, y);
+    let i = 1,
+        j = 1,
+        counter = 1;
 
+    // horizontal
+       // right position
+    console.log("h1 ========"); 
+    while (y + i < boardSize && hasNeighbors(x, y + i)) { i++; counter++; console.log("i-h1", i);}
+        // left position
+    console.log("h2 ========");
+    while (y - j >= 0 && hasNeighbors(x, y - j)) { j++; counter++; console.log("j-h2", j);} 
+    if (counter > 4) return console.log("yes " + counter);
+
+    // vertical
+        // up
+    console.log("v1 ========");
+    while (x + i < boardSize && hasNeighbors(x + 1, y)) { i++; counter++; console.log("i-v1", i);}
+        // down
+    console.log("v2 ========");
+    while (x - j >= 0 && hasNeighbors(x - j, y)) { j++; counter++; console.log("j-v2", j);}
+    if (counter > 4) return console.log("yes " + counter);
+
+        // from left-top to right-bottom
+    console.log("dl-r1 ========");
+    while (x + i < boardSize && hasNeighbors(x + 1, y)) { i++; counter++; console.log("i-dl-r1", i);}
+    console.log("dl-r2 ========");
+    while (x - j >= 0 && hasNeighbors(x - j, y)) { j++; counter++; console.log("j-dl-r2", j);}
+    if (counter > 4) return console.log("yes " + counter);
+
+        // from right-top to left-bottom
+    console.log("dr-l1 ========");
+    while (x + i < boardSize && y + i < boardSize && hasNeighbors(x + i, y + i)) { i++; counter++; console.log("i", i);} 
+    console.log("dr-l2 ========");
+    while (x - j >= 0 && y - j >= 0 && hasNeighbors(x - j, y - j)) {j++; counter++; console.log("j", j);}
+    if (counter > 4) return console.log("you win " + counter);
+
+    return console.log("No! " + counter);
 }

@@ -14,7 +14,7 @@ let userMove,
 
 //creating the game board
 function createDiv() {
-    boardSize = document.querySelector("#boardsize").value;
+    boardSize = +document.querySelector("#boardsize").value;
     userMove = 1;
     btn.removeEventListener("click", createDiv);
     btn.textContent = "Restart";
@@ -33,7 +33,7 @@ function createDiv() {
 
     board.classList.add("board_border");
     btn.addEventListener("click", restart);
-    board.addEventListener("click", tikTakEl);
+    board.addEventListener("click", getChipPos);
 }
 
 function addBox(x, y) {
@@ -46,7 +46,7 @@ function addBox(x, y) {
 function restart() {
     // clearing the board
     btn.removeEventListener("click", restart);
-    board.removeEventListener("click", tikTakEl);
+    board.removeEventListener("click", getChipPos);
     const chips = Array.from(board.querySelectorAll("img"));
     chips.forEach((e) => e.classList.add("sink"));
     board.classList.add("shakeAnim");
@@ -68,7 +68,7 @@ function btnActive(event) {
     }, 10);
 }
 
-function tikTakEl(e) {
+function getChipPos(e) {
     e = e.target;
     const chip = new Image();
     if (!e.className || e.classList.contains("board")) {
@@ -79,33 +79,34 @@ function tikTakEl(e) {
     let y = +e.id.split(".")[1];
     recordMoves[x][y] = userMove;
     chip.src = `chip${userMove}.svg`;
-    userMove = -1 * userMove;
-    e.appendChild(chip);
-    nextMoveImage.src = `chip${userMove}.svg`;
+   
     // hasNeighbors(x, y);
     isWinPos(x, y);
     // alert(`target = ${e.tagName} \n class = ${e.classList.contains("board")} \n x= ${x} y=${y}` );
+
+    userMove = -1 * userMove;
+    e.appendChild(chip);
+    nextMoveImage.src = `chip${userMove}.svg`;
 }
 
 // checking neighbors at:
 function hasNeighbors(x, y) {
-    if (y > 0 && recordMoves[x][y - 1] != 0) return true; // Left:
-    if (y + 1 < boardSize && recordMoves[x][y + 1] != 0)
-        return true; // Right
+    
+    if (recordMoves[x][y] === userMove) return true;
+    // if (y > 0 && recordMoves[x][y] === userMove) return true; // Left:
+    // if (y + 1 < boardSize && recordMoves[x][y + 1] === userMove) return true; // Right
 
-    if (x > 0) {
-        if (recordMoves[x - 1][y] != 0) return true; // Top
-        if (y > 0 && recordMoves[x - 1][y - 1] != 0) return true; // Left - Top
-        if (y + 1 < boardSize && recordMoves[x - 1][y + 1] != 0)
-            return true; // Right - Top
-    }
+    // if (x > 0) {
+    //     if (recordMoves[x][y] === userMove) return true; // Top
+    //     if (y > 0 && recordMoves[x - 1][y - 1] === userMove) return true; // Left - Top
+    //     if (y + 1 < boardSize && recordMoves[x - 1][y + 1] === userMove) return true; // Right - Top
+    // }
 
-    if (x + 1 < boardSize) {
-        if (recordMoves[x + 1][y] != 0) return true; // Bottom
-        if (y > 0 && recordMoves[x + 1][y - 1] != 0) return true; // Left - Bottom
-        if (y + 1 < boardSize && recordMoves[x + 1][y + 1] != 0)
-            return true; // Right - Bottom
-    }
+    // if (x + 1 < boardSize) {
+    //     if (recordMoves[x + 1][y] === userMove) return true; // Bottom
+    //     if (y > 0 && recordMoves[x + 1][y - 1] === userMove) return true; // Left - Bottom
+    //     if (y + 1 < boardSize && recordMoves[x + 1][y + 1] === userMove) return true; // Right - Bottom
+    // }
     return false;
 }
 
@@ -114,41 +115,73 @@ function hasNeighbors(x, y) {
 // userMove = 1 or -1 => x or y maybe incrementing or decrementing by every user move
 function isWinPos(x, y) {
     console.log(x, y);
-    let i = 1,
-        j = 1,
+    let counter;
+
+    function isOnBoard(x,y){
+        console.log(x,y)
+        try {
+            return recordMoves[x][y];
+        } catch (error) {
+            return false;
+        }
+    }
+        
+    function checkUserPos(key,i,j){
+            switch (key) {
+                case 'h1':
+                    return isOnBoard(x, y + i) && hasNeighbors(x, y + i); // horizontal right
+                case 'h2':
+                    return isOnBoard (x, y - j) && hasNeighbors(x, y - j); // horizontal left
+                case 'v1':
+                    return isOnBoard(x + i, y) && hasNeighbors(x + i, y); //  vertical bottom
+                case 'v2':
+                    return isOnBoard(x - j, y) && hasNeighbors(x - j, y); //  vertical top
+                case 'lt_rb1':
+                    return isOnBoard(x + i, y + i) && hasNeighbors(x + i, y + i); //  right-bottom
+                case 'lt_rb2':
+                    return isOnBoard(x - j, y - j) && hasNeighbors(x - j, y - j); // left-top
+                case 'rt_lb1':
+                    return isOnBoard(x - i, y + i) && hasNeighbors(x - i, y + i) ; // right-top 
+                case 'rt_lb2':
+                   return isOnBoard(x + j, y - j) && hasNeighbors(x + j, y - j); // left-bottom
+                default:
+                    console.log(" wrong key: ", key)
+                    break;
+            }
+        }
+    let chipRows = ['h','v','lt_rb', 'rt_lb']
+
+    chipRows.map( (el)=> {
+        let i = 1;
+        let j = 1;
         counter = 1;
+        while (checkUserPos(el+1, i, j)) { i++; counter++; console.log(`${el+1}`, i);}
+        while (checkUserPos(el+2, i, j)) { j++; counter++; console.log(`${el+2}`, j);} 
+        if (counter > 4) return console.log("yes " + counter);
+            else return console.log("No! " + counter);
+        }
+    )
+    // i = 1,
+    // j = 1,
+    // counter = 1;
+    // while (checkUserPos(v_b)) { i++; counter++; console.log("v_b", i, "\n", hasNeighbors(x + 1, y));}
+    // while (checkUserPos(v_t)) { j++; counter++; console.log("v_t", j);}
+    // if (counter > 4) return console.log("yes " + counter);
 
-    // horizontal
-       // right position
-    console.log("h1 ========"); 
-    while (y + i < boardSize && hasNeighbors(x, y + i)) { i++; counter++; console.log("i-h1", i);}
-        // left position
-    console.log("h2 ========");
-    while (y - j >= 0 && hasNeighbors(x, y - j)) { j++; counter++; console.log("j-h2", j);} 
-    if (counter > 4) return console.log("yes " + counter);
+    // i = 1,
+    // j = 1,
+    // counter = 1;
+    // while (checkUserPos(d_lt)) { i++; counter++; console.log("d_lt", i);}
+    // while (checkUserPos(d_rb)) { j++; counter++; console.log("d-rb", j);}
+    // if (counter > 4) return console.log("yes " + counter);
 
-    // vertical
-        // up
-    console.log("v1 ========");
-    while (x + i < boardSize && hasNeighbors(x + 1, y)) { i++; counter++; console.log("i-v1", i);}
-        // down
-    console.log("v2 ========");
-    while (x - j >= 0 && hasNeighbors(x - j, y)) { j++; counter++; console.log("j-v2", j);}
-    if (counter > 4) return console.log("yes " + counter);
+    // i = 1,
+    // j = 1,
+    // counter = 1;
+    // while (checkUserPos(d_rt)) { i++; counter++; console.log("d-rt", i);} 
+    // while (checkUserPos(d_lb)) {j++; counter++; console.log("d-lb", j);}
+    // if (counter > 4) return console.log("you win " + counter);
 
-        // from left-top to right-bottom
-    console.log("dl-r1 ========");
-    while (x + i < boardSize && hasNeighbors(x + 1, y)) { i++; counter++; console.log("i-dl-r1", i);}
-    console.log("dl-r2 ========");
-    while (x - j >= 0 && hasNeighbors(x - j, y)) { j++; counter++; console.log("j-dl-r2", j);}
-    if (counter > 4) return console.log("yes " + counter);
-
-        // from right-top to left-bottom
-    console.log("dr-l1 ========");
-    while (x + i < boardSize && y + i < boardSize && hasNeighbors(x + i, y + i)) { i++; counter++; console.log("i", i);} 
-    console.log("dr-l2 ========");
-    while (x - j >= 0 && y - j >= 0 && hasNeighbors(x - j, y - j)) {j++; counter++; console.log("j", j);}
-    if (counter > 4) return console.log("you win " + counter);
-
-    return console.log("No! " + counter);
 }
+
+

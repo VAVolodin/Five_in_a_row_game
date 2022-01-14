@@ -1,3 +1,9 @@
+:root{
+    --ten: 10%;
+    --fifteen: 6.35%;
+    --twelve: 4.8%
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -90,13 +96,34 @@ audio {
 
 .board {
     margin: 0 auto;
+    width: 67.5vh;
+    height: 67.5vh;
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
+    position: relative;
 }
 
 .board_border{
     box-shadow: 0 0 0 0.5em  #babdbe;
+}
+
+.modal {
+    box-shadow: inset 0 0 0.3rem 0.2em #ffffff5e, 0 0 2rem 0.5em #a122af99;
+    margin: 43% 0;
+    padding: 1em;
+    background: #a122af;
+    position: absolute;
+    z-index: 1;
+    width: 30%;
+    border-radius: 0.3rem;
+    animation: myAnim 0.3s ease 0s 1 normal forwards;
+}
+
+.modal_text{
+    text-align: center;
+    color: cyan;
+    text-shadow: 0 0 0.2rem white, 0 0 1rem cyan;
 }
 
 .shakeAnim{
@@ -136,8 +163,8 @@ audio {
 }
 
 .box {
-    height: 6.35%;
-    width: 6.35%;
+    height: var(--fifteen);
+    width: var(--fifteen);
     background: #fce3ff;
     box-shadow: 0 0 0.5em #c44ed1 ;
     animation: myAnim 0.5s ease 0s 1 normal forwards;

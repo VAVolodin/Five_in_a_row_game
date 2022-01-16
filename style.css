@@ -1,7 +1,12 @@
-:root{
-    --ten: 10%;
-    --fifteen: 6.35%;
-    --twelve: 4.8%
+:root {
+    --blue: #2bd2ff;
+    --red: #fc03b6 ;
+    --sz10: 45vh;
+    --sz15: 67.5vh;
+    --sz20: 70vh;
+    --bxsz10: 10% ;
+    --bxsz15: 6.35%;
+    --bxsz20: 4.8%;
 }
 
 * {
@@ -10,7 +15,11 @@
     text-decoration: none;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
-    outline: none;
+}
+
+*:focus-visible{
+    outline: 0.2em solid #2bd2ff;
+    outline-style: inset;
 }
 
 body {
@@ -19,13 +28,17 @@ body {
 }
 
 header {
+    border-bottom: 0.5em ridge  #bcafaf66;
+}
+
+.header_wrap {
+    max-width: 1120px;
     height: 20vh;
     display: flex;
     flex-direction: column;
     justify-content:space-evenly;
     align-items:center;
-    border-bottom: 0.5em ridge  #bcafaf66;
-    margin: 1em 0 2em 0;
+    margin: 1em auto;
 }
 
 .header_nav-wrap {
@@ -35,11 +48,56 @@ header {
     align-items: center;
 }
 
-audio {
+.radio {
     display: block;
     height: 2em;
     width: 14em;
     border-radius: 2em;
+}
+
+.description {
+    max-width: 640px;
+    margin: 10vh auto;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.description h2{
+    text-decoration: #2bd2ff underline double;
+}
+
+.description ul {
+    line-height: 2rem;
+    margin-top: 2.5vh;
+    list-style: none;
+    text-align: justify;
+}
+
+.description ul li {
+    position: relative;
+}
+
+.description ul li::before {
+    content: "";
+    background: url(Blue.svg);
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    left: -4%;
+    top: 24%;
+    box-shadow: inset 0 0 0.5em #2bd2ff, 0 0 0.5em #2bd2ff, 0 0 4em #2bd2ff;
+    border-radius: 2rem;
+}
+.description ul li::after {
+    content: "";
+    background: url(Red.svg);
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    left: 102%;
+    top: 24%;
+    box-shadow: inset 0 0 0.5em #fc03b6, 0 0 0.5em #fc03b6, 0 0 4em #fc03b6;
+    border-radius: 2rem;
 }
 
 .player_wrap select {
@@ -55,9 +113,13 @@ audio {
     height: 100%;
     margin: 0 0.1vw;
 }
-.next_move-wrap img {
+.nextMove_chip {
     width: 10%;
     margin-left: 0.3em;
+    border-radius: 2em;
+    color: var(--blue);
+    
+    box-shadow: inset 0 0 1em currentColor, 0 0 0.5em currentColor;
 }
 
 .size_wrap select {
@@ -94,10 +156,16 @@ audio {
     font-weight: bold;
 }
 
+.start_btn:hover {
+    background: #bcace9;
+}
+
+.start_btn:active {
+    background: #8b76c2;
+}
+
 .board {
-    margin: 0 auto;
-    width: 67.5vh;
-    height: 67.5vh;
+    margin: 1em auto;
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
@@ -129,6 +197,48 @@ audio {
 .shakeAnim{
     animation: shakeAnim 0.5s ease 0s 1 reverse forwards;
 }
+
+.box {
+    background: #fce3ff;
+    box-shadow: 0 0 0.5em #c44ed1 ;
+    animation: myAnim 0.5s ease 0s 1 normal forwards;
+}
+
+.box:hover,
+.box:focus,
+.box:focus-visible
+{
+    cursor: pointer;
+    box-shadow: 0 0 5em #a122af ;
+    background: #ddabe2;
+    /* transition: all 0.3s ease-out; */
+}
+
+.sink {
+    animation: sink 1s ease ;
+}
+
+
+@media (max-width: 1199px) {
+    /* CSS для ширины от 992px до 1199px */
+  }
+  
+  /* md-размер (<=991px) */
+  @media (max-width: 991px) {
+    /* CSS для ширины от 768px до 991px */
+  }
+  
+  /* sm-размер (<=768px) */
+  @media (max-width: 767px) {
+    /* CSS для ширины от 576px до 767px */
+  }
+  
+  /* xs-размер (<=575px) */
+  @media (max-width: 575px) {
+    /* CSS для ширины до 575px (включительно) */
+  }
+
+ /*  animation  */
 @keyframes shakeAnim {
 
     0%,
@@ -162,14 +272,6 @@ audio {
     }
 }
 
-.box {
-    height: var(--fifteen);
-    width: var(--fifteen);
-    background: #fce3ff;
-    box-shadow: 0 0 0.5em #c44ed1 ;
-    animation: myAnim 0.5s ease 0s 1 normal forwards;
-}
-
 @keyframes myAnim {
     0% {
         opacity: 0;
@@ -182,19 +284,6 @@ audio {
     }
 }
 
-.box:hover {
-    cursor: pointer;
-    box-shadow: 0 0 5em #a122af ;
-    background: #ddabe2;
-    /* transition: all 0.3s ease-out; */
-}
-
-
-.sink {
-    animation: sink 1s ease ;
-}
-
-
 @keyframes sink {
     0% {
         opacity: 1;
@@ -206,23 +295,3 @@ audio {
         transform: translateY(100vh);
     }
 }
-
-
-@media (max-width: 1199px) {
-    /* CSS для ширины от 992px до 1199px */
-  }
-  
-  /* md-размер (<=991px) */
-  @media (max-width: 991px) {
-    /* CSS для ширины от 768px до 991px */
-  }
-  
-  /* sm-размер (<=768px) */
-  @media (max-width: 767px) {
-    /* CSS для ширины от 576px до 767px */
-  }
-  
-  /* xs-размер (<=575px) */
-  @media (max-width: 575px) {
-    /* CSS для ширины до 575px (включительно) */
-  }

@@ -1,33 +1,29 @@
-const header = document.querySelector("header");
+const dqs = (tag) => document.querySelector(tag);
+const header = dqs("header");
+const description = dqs(".description");
+const board = dqs(".board");
 const btn = header.querySelector(".start_btn");
-const board = document.querySelector(".board");
-const nextMoveImage = header
-    .querySelector(".next_move-wrap")
-    .querySelector("img");
-
-btn.addEventListener("click", createBoard);
-btn.addEventListener("click", btnActive);
-
+const nextMoveImage = header.querySelector(".nextMove_chip");
+const chipColor = {"1":"Blue","-1":"Red"};
 let userMove,
     boardSize = null,
     recordMoves = [];
 
-const chipColor = {"1":"Blue","-1":"Red"}
-const boxSize = {10:"--ten", 15:"--fifteen", 20:"--twelve"}
-
+btn.addEventListener("click", restart);
 
 //creating the game board
 function createBoard() {
-    boardSize = +document.querySelector("#boardsize").value;
+    boardSize = +dqs("#boardsize").value;
     userMove = 1;
-    btn.removeEventListener("click", createBoard);
+    btn.removeEventListener("click", restart);
     btn.textContent = "Restart";
     document.body.appendChild(board);
+    board.style.height = board.style.width = `var(--sz${boardSize})`;
 
     for (let x = 0; x <= boardSize - 1; x++) {
         recordMoves[x] = [];
         for (let y = 0; y <= boardSize - 1; y++) {
-            addElem('board', 'div', 'box', 'id', `${x}.${y}`);
+            addElem('board', 'div', 'box', 'id', `${x}.${y}`, boardSize);
             recordMoves[x][y] = 0;
         }
     }
@@ -41,6 +37,7 @@ function createBoard() {
 
 
 function restart() {
+    description.classList.add("sink");
     // clearing the board
     btn.removeEventListener("click", restart);
     board.removeEventListener("click", getChipPos);
@@ -51,11 +48,14 @@ function restart() {
         board.innerHTML = "";
         board.classList.remove("board_border");
         board.classList.remove("shakeAnim");
-        board.remove();
+        board.classList.remove(`size_${boardSize}`);
         chips.forEach((e) => e.classList.remove("sink"));
         createBoard();
+        description.remove();
     }, 800);
+    
     // data clearing ?
+    recordMoves = [];
 }
 
 function btnActive(event) {
@@ -71,7 +71,6 @@ function getChipPos(e) {
     e = e.target;
     const chip = new Image();
     if (!e.className || e.classList.contains("board")) {
-        alert("You miss pal! Let's try again.");
         return;
     }
     let x = +e.id.split(".")[0];
@@ -79,11 +78,12 @@ function getChipPos(e) {
     recordMoves[x][y] = userMove;
     chip.src = `${chipColor[userMove]}.svg`;
     e.appendChild(chip);
-    nextMoveImage.src = `${chipColor[`${-1*userMove}`]}.svg`;
+    nextMoveImage.style.color = `var(--${chipColor[userMove*-1].toLowerCase()})`;
+    if ( !recordMoves.filter((e,i) => e.some(el => el == 0)).length ) // is the board full ?
+        {return showModal(0)};
     checkWin(x, y)
     // alert(`target = ${e.tagName} \n class = ${e.classList.contains("board")} \n x= ${x} y=${y}` );
     userMove = -1 * userMove;
-    
 }
 
 function checkWin(x, y) {
@@ -101,11 +101,7 @@ function isWinPos(x,y){
         counter = 1;
         while (checkUserPos(row+1, i, j,x,y)) { i++; counter++; console.log(`${row+1}`, i, counter);}
         while (checkUserPos(row+2, i, j,x,y)) { j++; counter++; console.log(`${row+2}`, j, counter);} 
-        if (counter > 4) {return (
-            board.removeEventListener("click", getChipPos),
-            showModal(userMove)
-            )
-        }
+        if (counter > 4) {return showModal(userMove) }
         }
     return false;
 }
@@ -155,18 +151,22 @@ function isOnBoard(x,y){
 
 // creating element needed
 function addElem(...props) {
-    [prnt, tagName, clsName, atrName, value] = props;
-    prnt = document.querySelector(`.${prnt}`);
+    [prnt, tagName, clsName, atrName, value, boardSize] = props;
+    prnt = dqs(`.${prnt}`);
     let newDiv = document.createElement(tagName);
     (atrName && value) && newDiv.setAttribute(atrName, value);
     clsName && newDiv.classList.add(clsName);
+    if (clsName === 'box') newDiv.style.height = newDiv.style.width = `var(--bxsz${boardSize})`;
+    newDiv.setAttribute("tabindex", "0")
     prnt.appendChild(newDiv);
 }
 
 function showModal(userMove) {
+    board.removeEventListener("click", getChipPos);
+    let message = userMove ? `${chipColor[userMove]} chips Win!` : "It's a draw! \n Game oveR";
     addElem("board","div", "modal")
     addElem('modal' , 'div', 'modal_text')
-    board.querySelector(".modal_text").textContent = `${chipColor[userMove]} chips Win!`
+    board.querySelector(".modal_text").textContent = message;
 }
 
 

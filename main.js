@@ -5,7 +5,7 @@ const board = dqs(".board");
 const btn = header.querySelector(".start_btn");
 const nextMoveImage = header.querySelector(".nextMove_chip");
 const chipColor = {"1":"Blue","-1":"Red"};
-let userMove,
+let userMove = 1,
     boardSize = null,
     recordMoves = [];
 
@@ -28,7 +28,6 @@ function createBoard() {
         }
     }
     
-    // board.querySelectorAll(".box").setAttribute("height","${boxSize[boardSize]}")
     board.classList.add("board_border");
     btn.addEventListener("click", restart);
     setTimeout(() => {board.addEventListener("click", getChipPos)}, 1000); 
@@ -37,13 +36,14 @@ function createBoard() {
 
 
 function restart() {
+    let delay = 0;
     description.classList.add("sink");
     // clearing the board
     btn.removeEventListener("click", restart);
     board.removeEventListener("click", getChipPos);
     const chips = Array.from(board.querySelectorAll("img"));
     chips.forEach((e) => e.classList.add("sink"));
-    board.classList.add("shakeAnim");
+    if (recordMoves.filter((e) => e.some(el => el !== 0)).length ) { board.classList.add("shakeAnim"); delay=800;}
     setTimeout(() => {
         board.innerHTML = "";
         board.classList.remove("board_border");
@@ -52,20 +52,11 @@ function restart() {
         chips.forEach((e) => e.classList.remove("sink"));
         createBoard();
         description.remove();
-    }, 800);
+    }, delay);
     
     // data clearing ?
     recordMoves = [];
 }
-
-function btnActive(event) {
-    event.target.style.backgroundColor = "#0096a5";
-    setTimeout(() => {
-        event.target.style.backgroundColor = "#d2c2fd";
-    }, 10);
-}
-
-
 
 function getChipPos(e) {
     e = e.target;
@@ -79,7 +70,7 @@ function getChipPos(e) {
     chip.src = `${chipColor[userMove]}.svg`;
     e.appendChild(chip);
     nextMoveImage.style.color = `var(--${chipColor[userMove*-1].toLowerCase()})`;
-    if ( !recordMoves.filter((e,i) => e.some(el => el == 0)).length ) // is the board full ?
+    if ( !recordMoves.filter((e) => e.some(el => el == 0)).length ) // is the board full ?
         {return showModal(0)};
     checkWin(x, y)
     // alert(`target = ${e.tagName} \n class = ${e.classList.contains("board")} \n x= ${x} y=${y}` );
@@ -87,46 +78,50 @@ function getChipPos(e) {
 }
 
 function checkWin(x, y) {
-    return isWinPos(x,y)
+    return isWinPos(x,y) ? showModal() : false;
 }
 
-// cheking winning position
-function isWinPos(x,y){
+// cheking winning position after what?
+function isWinPos(x,y,usrMv = userMove){
+    return hasNeighbors(x,y,usrMv)>4 ? true : false;
+}
+
+
+function hasNeighbors (x,y,usrMv=userMove){
     let chipRows = ['h','v','lt_rb', 'rt_lb'];
-    let counter;
 
     for (row of chipRows) {
         let i = 1;
         let j = 1;
-        counter = 1;
-        while (checkUserPos(row+1, i, j,x,y)) { i++; counter++; console.log(`${row+1}`, i, counter);}
-        while (checkUserPos(row+2, i, j,x,y)) { j++; counter++; console.log(`${row+2}`, j, counter);} 
-        if (counter > 4) {return showModal(userMove) }
+        let counter = 1;
+        while (checkPosition(row+1, i, j,x,y, usrMv)) { i++; counter++;} // console.log(`${row+1}`, i, counter);}
+        while (checkPosition(row+2, i, j,x,y, usrMv)) { j++; counter++;} // console.log(`${row+2}`, j, counter);} 
+        if (counter > 1) {return counter}
         }
     return false;
 }
 
 // checking chip's place on game board
-function checkUserPos(...props){
-    let [key, i, j, x, y] = props;
+function checkPosition(...props){
+    let [key, i, j, x, y, userMove] = props;
 
     switch (key) {
         case 'h1':
-            return isOnBoard(x, y + i) && hasNeighbors(x, y + i); // horizontal right
+            return isOnBoard(x, y + i) && checkNeighbor(x, y + i, userMove); // horizontal right
         case 'h2':
-            return isOnBoard (x, y - j) && hasNeighbors(x, y - j); // horizontal left
+            return isOnBoard (x, y - j) && checkNeighbor(x, y - j, userMove); // horizontal left
         case 'v1':
-            return isOnBoard(x + i, y) && hasNeighbors(x + i, y); //  vertical bottom
+            return isOnBoard(x + i, y) && checkNeighbor(x + i, y, userMove); //  vertical bottom
         case 'v2':
-            return isOnBoard(x - j, y) && hasNeighbors(x - j, y); //  vertical top
+            return isOnBoard(x - j, y) && checkNeighbor(x - j, y, userMove); //  vertical top
         case 'lt_rb1':
-            return isOnBoard(x + i, y + i) && hasNeighbors(x + i, y + i); //  right-bottom
+            return isOnBoard(x + i, y + i) && checkNeighbor(x + i, y + i, userMove); //  right-bottom
         case 'lt_rb2':
-            return isOnBoard(x - j, y - j) && hasNeighbors(x - j, y - j); // left-top
+            return isOnBoard(x - j, y - j) && checkNeighbor(x - j, y - j, userMove); // left-top
         case 'rt_lb1':
-            return isOnBoard(x - i, y + i) && hasNeighbors(x - i, y + i) ; // right-top 
+            return isOnBoard(x - i, y + i) && checkNeighbor(x - i, y + i, userMove) ; // right-top 
         case 'rt_lb2':
-           return isOnBoard(x + j, y - j) && hasNeighbors(x + j, y - j); // left-bottom
+           return isOnBoard(x + j, y - j) && checkNeighbor(x + j, y - j, userMove); // left-bottom
         default:
             console.log(" wrong key: ", key)
             break;
@@ -135,8 +130,8 @@ function checkUserPos(...props){
 }
 
 // checking chip's neighbors
-function hasNeighbors(x, y) {
-    if (recordMoves[x][y] === userMove) return true;
+function checkNeighbor(x, y, usrMv = userMove) {
+    if (recordMoves[x][y] === usrMv) return true;
     return false;
 }
 
@@ -161,13 +156,36 @@ function addElem(...props) {
     prnt.appendChild(newDiv);
 }
 
-function showModal(userMove) {
+function showModal(usrMv=userMove) {
     board.removeEventListener("click", getChipPos);
-    let message = userMove ? `${chipColor[userMove]} chips Win!` : "It's a draw! \n Game oveR";
+    let message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";
     addElem("board","div", "modal")
     addElem('modal' , 'div', 'modal_text')
     board.querySelector(".modal_text").textContent = message;
 }
 
+// must writing the code CPU move description 
+//    (count free boxes from last user move to nearest user's chip for each line) it's gonna be awersome =))
+function compukterMove (x,y){
+    // 1 - should create array that were has emty boxes' information
+    // 2 - check for winner position each one of it (from empties)
+    // 3 - check all rows' directions from received last user move's around 5 nearest boxes
 
+    let emptyBoxes = [];  /// 0 if it hasn't value && any neighbor, 1 - if it has
+    for (let i = 0; i<boardSize; i++){
+        emptyBoxes[i] = [];
+        for (let j=0; j<boardSize; j++){
+            emptyBoxes[i][j] = 0;
+            if (recordMoves[i][j]) {emptyBoxes[i][j] = 1; continue}
+            if (!hasNeighbors(x,y,1) && !hasNeighbors(x,y,-1)) {emptyBoxes[i][j] = 1; continue}
+             // an empty box with a neighbor will come here =>  is user's winning position checking
+            //!isWinPos(i,j,1) && // if...else maybe???
+            // some code for checking the neighbors of the five closest boxes.....
+
+        }
+    }
+
+    
+    
+}
 

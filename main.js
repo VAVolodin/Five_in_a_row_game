@@ -185,7 +185,7 @@ function compukterMove (x,y){
         for (let j=0; j<boardSize; j++){
             emptyBoxes[i][j] = 0;
             if (recordMoves[i][j]) {emptyBoxes[i][j] = 1; continue}
-            if (hasNeighbors(i,j,1)) {emptyBoxes[i][j] = 1; continue}
+            if (!hasNeighbors(i,j,1)) {emptyBoxes[i][j] = 1; continue}
 
              // an empty box with a neighbor will come here =>  is user's winning position checking
             if (isWinPos(i,j,1)){ return newMove(i,j) }

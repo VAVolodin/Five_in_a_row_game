@@ -11,6 +11,8 @@ let userMove = 1,
 
 btn.addEventListener("click", restart);
 
+// Front
+
 //creating the game board
 function createBoard() {
     boardSize = +dqs("#boardsize").value;
@@ -33,7 +35,25 @@ function createBoard() {
     setTimeout(() => {board.addEventListener("click", getChipPos)}, 1000); 
 }
 
+// creating element needed
+function addElem(...props) {
+    [prnt, tagName, clsName, atrName, value, boardSize] = props;
+    prnt = dqs(`.${prnt}`);
+    let newDiv = document.createElement(tagName);
+    (atrName && value) && newDiv.setAttribute(atrName, value);
+    clsName && newDiv.classList.add(clsName);
+    if (clsName === 'box') newDiv.style.height = newDiv.style.width = `var(--bxsz${boardSize})`;
+    newDiv.setAttribute("tabindex", "0")
+    prnt.appendChild(newDiv);
+}
 
+function showModal(usrMv=userMove) {
+    board.removeEventListener("click", getChipPos);
+    let message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";
+    addElem("board","div", "modal")
+    addElem('modal' , 'div', 'modal_text')
+    board.querySelector(".modal_text").textContent = message;
+}
 
 function restart() {
     let delay = 0;
@@ -58,14 +78,20 @@ function restart() {
     recordMoves = [];
 }
 
+// === Back ====
+
 function getChipPos(e) {
     e = e.target;
-    const chip = new Image();
     if (!e.className || e.classList.contains("board")) {
         return;
     }
     let x = +e.id.split(".")[0];
     let y = +e.id.split(".")[1];
+    newMove(e,x,y);
+}
+
+function newMove (e,x,y) {
+    const chip = new Image();
     recordMoves[x][y] = userMove;
     chip.src = `${chipColor[userMove]}.svg`;
     e.appendChild(chip);
@@ -94,9 +120,9 @@ function hasNeighbors (x,y,usrMv=userMove){
         let i = 1;
         let j = 1;
         let counter = 1;
-        while (checkPosition(row+1, i, j,x,y, usrMv)) { i++; counter++;} // console.log(`${row+1}`, i, counter);}
-        while (checkPosition(row+2, i, j,x,y, usrMv)) { j++; counter++;} // console.log(`${row+2}`, j, counter);} 
-        if (counter > 1) {return counter}
+        while (checkPosition(row+1, i, j,x,y, usrMv)) { i++; counter++; console.log(`${row+1}`, i, counter);}
+        while (checkPosition(row+2, i, j,x,y, usrMv)) { j++; counter++; console.log(`${row+2}`, j, counter);} 
+        if (counter > 3) {return counter}
         }
     return false;
 }
@@ -144,25 +170,7 @@ function isOnBoard(x,y){
     }
 }
 
-// creating element needed
-function addElem(...props) {
-    [prnt, tagName, clsName, atrName, value, boardSize] = props;
-    prnt = dqs(`.${prnt}`);
-    let newDiv = document.createElement(tagName);
-    (atrName && value) && newDiv.setAttribute(atrName, value);
-    clsName && newDiv.classList.add(clsName);
-    if (clsName === 'box') newDiv.style.height = newDiv.style.width = `var(--bxsz${boardSize})`;
-    newDiv.setAttribute("tabindex", "0")
-    prnt.appendChild(newDiv);
-}
 
-function showModal(usrMv=userMove) {
-    board.removeEventListener("click", getChipPos);
-    let message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";
-    addElem("board","div", "modal")
-    addElem('modal' , 'div', 'modal_text')
-    board.querySelector(".modal_text").textContent = message;
-}
 
 // must writing the code CPU move description 
 //    (count free boxes from last user move to nearest user's chip for each line) it's gonna be awersome =))
@@ -177,10 +185,27 @@ function compukterMove (x,y){
         for (let j=0; j<boardSize; j++){
             emptyBoxes[i][j] = 0;
             if (recordMoves[i][j]) {emptyBoxes[i][j] = 1; continue}
-            if (!hasNeighbors(x,y,1) && !hasNeighbors(x,y,-1)) {emptyBoxes[i][j] = 1; continue}
+            if (hasNeighbors(i,j,1)) {emptyBoxes[i][j] = 1; continue}
+
              // an empty box with a neighbor will come here =>  is user's winning position checking
-            //!isWinPos(i,j,1) && // if...else maybe???
-            // some code for checking the neighbors of the five closest boxes.....
+            if (isWinPos(i,j,1)){ return newMove(i,j) }
+                else {
+                    maxX = i + 5 > boardSize ? boardSize : i+5,
+                    minX = i - 5 < 0 ? 0 : i-5;
+                    maxY = j + 5 > boardSize ? boardSize : j+5;
+                    minY = j - 5 < 0 ? 0 : j-5;
+                    let k = i,
+                        m = j;
+                    while(k<=maxX && hasNeighbors(k,j,1)){k++; counter++};
+                    while(m>=minY && hasNeighbors(i,m,1)){m--; counter++};
+                    
+                    k=i;
+                    m=j;
+                    while(k>=minX && hasNeighbors(x,y,1)){x--; counter++};
+                    while(m<=maxY && hasNeighbors(x,y,1)){y++; counter++};
+                }
+            // let en = emptyBoxes.map((e,i)=> e.map((el,ind)=>isWinPos(i,ind,1))) // cann't find winner move index
+
 
         }
     }

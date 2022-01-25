@@ -118,12 +118,12 @@ function checkWin(x, y) {
 
 // cheking winning position after what?
 function isWinPos(x,y,usrMv = userMove){
-    return hasNeighbors(x,y,usrMv)[2]>4 ? true : false;
+    return hasNeighbors(x,y,usrMv)[1][0]>4 ? true : false;
 }
 
     //will return array with userMove(1 or -1), ind -> direction row (where  0 ='h', 1 = 'v', 2= 'lt_rb', 3 = 'rt_lb'), cMax = maximum neighbors count, count neighbors by side1 & side2
 function hasNeighbors (x,y,usrMv=userMove){
-    let chipRows = ['h','v','lt_rb', 'rt_lb'],
+    let chipRows = ['0','1','2', '3'],
     counter = [],
     sideCount = [],
     k = 0;
@@ -132,8 +132,8 @@ function hasNeighbors (x,y,usrMv=userMove){
         let i = 1,
         j = 1,
         cnt = 1,
-        side1 = 0,
-        side2 = 0;
+        side1 = 1,
+        side2 = 1;
         
         while (checkPosition(row+1, i, j,x,y, usrMv)) { i++; cnt++;side1++; console.log(`${row+1}`,"\nside1 "+ side1, i, cnt);}
         while (checkPosition(row+2, i, j,x,y, usrMv)) { j++; cnt++; side2++; console.log(`${row+2}`,"\nside2 "+ side2, j, cnt);} 
@@ -146,7 +146,7 @@ function hasNeighbors (x,y,usrMv=userMove){
         let ind = counter.indexOf(cMax);
         console.log("\ncounter",counter, ind, cMax + "\n", sideCount[ind][0],sideCount[ind][1]);
         
-        return  [usrMv,ind,cMax,sideCount[ind][0],sideCount[ind][1]];
+        return  [[ind, sideCount[ind][0], sideCount[ind][1]], [cMax]];
 }
 
 // checking chip's place on game board
@@ -154,21 +154,21 @@ function checkPosition(...props){
     let [key, i, j, x, y, usrMv] = props;
 
     switch (key) {
-        case 'h1':
+        case '01':
             return isOnBoard(x, y + i) && checkNeighbor(x, y + i, usrMv); // horizontal right
-        case 'h2':
+        case '02':
             return isOnBoard (x, y - j) && checkNeighbor(x, y - j, usrMv); // horizontal left
-        case 'v1':
+        case '11':
             return isOnBoard(x + i, y) && checkNeighbor(x + i, y, usrMv); //  vertical bottom
-        case 'v2':
+        case '12':
             return isOnBoard(x - j, y) && checkNeighbor(x - j, y, usrMv); //  vertical top
-        case 'lt_rb1':
+        case '21':
             return isOnBoard(x + i, y + i) && checkNeighbor(x + i, y + i, usrMv); //  right-bottom
-        case 'lt_rb2':
+        case '22':
             return isOnBoard(x - j, y - j) && checkNeighbor(x - j, y - j, usrMv); // left-top
-        case 'rt_lb1':
+        case '31':
             return isOnBoard(x - i, y + i) && checkNeighbor(x - i, y + i, usrMv) ; // right-top 
-        case 'rt_lb2':
+        case '32':
            return isOnBoard(x + j, y - j) && checkNeighbor(x + j, y - j, usrMv); // left-bottom
         default:
             console.log(" wrong key: ", key)
@@ -179,16 +179,21 @@ function checkPosition(...props){
 
 // checking chip's neighbors
 function checkNeighbor(x, y, usrMv = userMove) {
-    if (recordMoves[x][y] === usrMv) return true;
-    return false;
+    try {
+        return recordMoves[x][y] === usrMv ?  true : false;
+    }
+    catch {
+        return false;
+    }
 }
 
     // is the chip hits the game board checking 
 function isOnBoard(x,y){
     try {
-        return !!recordMoves[x][y];
-    } catch (error) {
-        return false;
+    return recordMoves[x][y] != undefined ? true : false;
+    }
+    catch {
+        return false
     }
 }
 
@@ -203,8 +208,35 @@ function compukterMove (){
     // 1 - should create array that were has emty boxes' information
     // 2 - check for winner position each one of it (from empties)
     // 3 - check all rows' directions from received last user move's around 5 nearest boxes
-    let cpuMove = moveChecker(-1);
-    let usrMv = moveChecker(1);
+
+    let resCpu = moveChecker(-1);
+    let resUser = moveChecker(1);
+
+    let geoCpu = getOpenEdge(resCpu);
+    let geoUser = getOpenEdge(resUser);
+
+    let bestMove = (arr, arr2) =>{
+        let random = (argm) => Math.round(Math.random()*argm.length);
+        let openMoves = arr.map((e,i) => {
+            if (!arr2[i].includes(false)) {[e[0][3],e[0][4]]}
+        });
+    
+        if (openMoves.length==1){ return openMoves[0]};
+        if (openMoves) {return openMoves[random(openMoves)]}
+            
+        let closerMoves = arr.map(e => [e[0][3],e[0][4]]);
+        if (closerMoves.length==1){ return closerMoves[0]};
+        if (closerMoves) {
+        return closerMoves[random(closerMoves)]
+        } 
+        else return;
+    }
+
+    if (resCpu[0][1] > resUser[0][1]){
+        
+
+    } else {}
+
             i = i + Math.round(Math.random())*r();
             j = j + Math.round(Math.random())*r();
             return el(i,j);
@@ -225,28 +257,47 @@ function compukterMove (){
                     // while(m<=maxY && hasNeighbors(x,y,1)){y++; counter++};
                 // }
             // let en = emptyBoxes.map((e,i)=> e.map((el,ind)=>isWinPos(i,ind,1))) // cann't find winner move index
-}
 
-    // will return newMove(x,y) if it finds a winning position, otherwise an array with the data of open fours and open threes
-function moveChecker (usrMv) {
-    let emptyBoxes = [];  /// 0 if it hasn't value && has a neighbor, 1 - if it has a value or hasn't any neighbor;
-    let res = [];
-    for (let i = 0, max = 3; i<boardSize; i++){
-        emptyBoxes[i] = [];
-        for (let j=0; j<boardSize; j++){
-            emptyBoxes[i][j] = 0;
-            let hNcount = hasNeighbors(i,j,usrMv)[2];
-            if (recordMoves[i][j]) {emptyBoxes[i][j] = 1; continue};
-            if (hNcount<2) {emptyBoxes[i][j] = 1; continue};
-            if (isWinPos(i,j,usrMv)){return el(i,j)}
-            else {
-                if (hNcount>=max){
-                    max = hNcount;
-                    res.push([max,i,j]);
+
+    function getOpenEdge (arr) {
+        let pog = []
+        arr.map(e => {
+            let ar = [];
+            let m = 1;
+            while(m<3){
+                let n = e[0][0];
+                e[0][0] = e[0][0]+`${m}`
+                ar.push(checkPosition(...e[0]));
+                m++;
+                e[0][0] = n;
+            }
+            pog.push(ar)
+        })
+        return pog;
+    }
+
+        // will return newMove(x,y) if it finds a winning position, otherwise an array with the data of open fours and open threes
+        function moveChecker (usrMv) {
+            let emptyBoxes = [];  /// 0 if it hasn't value && has a neighbor, 1 - if it has a value or hasn't any neighbor;
+            let res = [];
+            for (let i = 0, prev = 3, max = 3; i<boardSize; i++){
+                emptyBoxes[i] = [];
+                for (let j=0; j<boardSize; j++){
+                    emptyBoxes[i][j] = 0;
+                    let hN = hasNeighbors(i,j,usrMv);
+                    if (recordMoves[i][j] || hN[1][0]<2) {continue};
+                    
+                    if (isWinPos(i,j,usrMv)){return el(i,j)}
+                    else {
+                        if (hN[1][0]>=max){
+                            max = hN[1][0];
+                            if (prev < max) {res.pop(); prev = max;}
+                            res.push([[...hN[0],i,j,0],...hN[1]]);
+                        }
                 }
             }
         }
+        return res; 
     }
-    return res;
-}
 
+}

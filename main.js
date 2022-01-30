@@ -1,15 +1,15 @@
-const dqs = (tag) => document.querySelector(tag);
-const header = dqs("header");
-const description = dqs(".description");
-const board = dqs(".board");
-const btn = header.querySelector(".start_btn");
-const nextMoveImage = header.querySelector(".nextMove_chip");
-const chipColor = {"1":"Blue","-1":"Red"};
+const   
+    dqs = (tag) => document.querySelector(tag),
+    header = dqs("header"),
+    description = dqs(".description"),
+    board = dqs(".board"),
+    btn = header.querySelector(".start_btn"),
+    nextMoveImage = header.querySelector(".nextMove_chip"),
+    chipColor = {"1":"Blue","-1":"Red"};
+    
 let userMove = 1,
     boardSize = null,
-    recordMoves = [],
-    a = [],
-    aa = 1;
+    recordMoves = [];
 
 btn.addEventListener("click", restart);
 
@@ -25,12 +25,10 @@ function createBoard() {
 
     for (let x = 0; x <= boardSize - 1; x++) {
         recordMoves[x] = [];
-        a[x] = [];
         for (let y = 0; y <= boardSize - 1; y++) {
             addElem('board', 'div', 'box', 'id', `${x}.${y}`, boardSize);
             recordMoves[x][y] = 0;
-            a[x][y] = 0;
-        }
+            }
     }
     
     board.classList.add("board_border");
@@ -42,7 +40,7 @@ function createBoard() {
 function addElem(...props) {
     [prnt, tagName, clsName, atrName, value, boardSize] = props;
     prnt = dqs(`.${prnt}`);
-    let newDiv = document.createElement(tagName);
+    const newDiv = document.createElement(tagName);
     (atrName && value) && newDiv.setAttribute(atrName, value);
     clsName && newDiv.classList.add(clsName);
     if (clsName === 'box') newDiv.style.height = newDiv.style.width = `var(--bxsz${boardSize})`;
@@ -52,7 +50,7 @@ function addElem(...props) {
 
 function showModal(usrMv=userMove) {
     board.removeEventListener("click", getChipPos);
-    let message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";
+    const message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";
     addElem("board","div", "modal")
     addElem('modal' , 'div', 'modal_text')
     board.querySelector(".modal_text").textContent = message;
@@ -94,7 +92,6 @@ function getChipPos(e) {
     let x = +e.id.split(".")[0];
     let y = +e.id.split(".")[1];
     recordMoves[x][y] = userMove;
-    a[x][y] = hasNeighbors(x,y); 
     newMove(e,x,y);
 }
 
@@ -104,12 +101,11 @@ function newMove (e,x,y) {
     chip.src = `${chipColor[userMove]}.svg`;
     e.appendChild(chip);
     nextMoveImage.style.color = `var(--${chipColor[userMove*-1].toLowerCase()})`;
-    if ( !recordMoves.filter((e) => e.some(el => el == 0)).length ) // is the board full ?
+    if ( !recordMoves.filter((e) => e.some(el => el == 0)).length ) // if the board full return "draw"
         {return showModal(0)};
     checkWin(x, y)
-    // alert(`target = ${e.tagName} \n class = ${e.classList.contains("board")} \n x= ${x} y=${y}` );
     userMove = -1 * userMove;
-    //if (userMove<0) {compukterMove(); console.log('compukterMove1')};
+    if (userMove<0) {compukterMove(x,y)};
 }
 
 function checkWin(x, y) {
@@ -121,37 +117,38 @@ function isWinPos(x,y,usrMv = userMove){
     return hasNeighbors(x,y,usrMv)[1][0]>4 ? true : false;
 }
 
-    //will return array with userMove(1 or -1), ind -> direction row (where  0 ='h', 1 = 'v', 2= 'lt_rb', 3 = 'rt_lb'), cMax = maximum neighbors count, count neighbors by side1 & side2
+
+// checks 5 nearby boxes for neighbors
+// return array with: ind - direction row (where  0 ='h', 1 = 'v', 2= 'lt_rb', 3 = 'rt_lb'), 
+//                            sideCount[ind][0] - neighbors count of first while loop,
+//                            sideCount[ind][1] - neighbors count of second while loop,
+//                            totalNeighbors = total neighbors' count (by side1 & side2)
 function hasNeighbors (x,y,usrMv=userMove){
-    let chipRows = ['0','1','2', '3'],
-    counter = [],
-    sideCount = [],
-    k = 0;
+    const
+        chipRows = ['0','1','2', '3'],
+        counter = [],
+        sideCount = [];
+    let k = 0;
 
     for (row of chipRows) {
-        let i = 1,
-        j = 1,
-        cnt = 1,
-        side1 = 1,
-        side2 = 1;
+        let i = j = cnt = side1 = side2 = 1;
         
-        while (checkPosition(row+1, i, j,x,y, usrMv)) { i++; cnt++;side1++; console.log(`${row+1}`,"\nside1 "+ side1, i, cnt);}
-        while (checkPosition(row+2, i, j,x,y, usrMv)) { j++; cnt++; side2++; console.log(`${row+2}`,"\nside2 "+ side2, j, cnt);} 
+        while (checkPosition(row+1, i, j,x,y, usrMv)) { i++; cnt++;side1++;};
+        while (checkPosition(row+2, i, j,x,y, usrMv)) { j++; cnt++; side2++; };
         counter[k] = cnt;
         sideCount[k] = [side1, side2];
         k++;
         
-        }
-        let cMax = Math.max.apply(null, counter);
-        let ind = counter.indexOf(cMax);
-        console.log("\ncounter",counter, ind, cMax + "\n", sideCount[ind][0],sideCount[ind][1]);
-        
-        return  [[ind, sideCount[ind][0], sideCount[ind][1]], [cMax]];
+    }
+    const totalNeighbors = Math.max.apply(null, counter);
+    const ind = counter.indexOf(totalNeighbors);
+    
+    return  [[ind, sideCount[ind][0], sideCount[ind][1]], [totalNeighbors]];
 }
 
-// checking chip's place on game board
+// checking chip's place on the game board for all rows' directions (true / false)
 function checkPosition(...props){
-    let [key, i, j, x, y, usrMv] = props;
+    const [key, i, j, x, y, usrMv] = props;
 
     switch (key) {
         case '01':
@@ -197,107 +194,84 @@ function isOnBoard(x,y){
     }
 }
 
+ // CPU move description 
+function compukterMove (x,y){
+    const   
+        makeMove = (arr) => setTimeout(() => {document.getElementById(`${arr[0]}.${arr[1]}`).click()}, 300),
+        r = () =>  Math.random() > 0.5 ? 1 : -1;
+    let c = getPotentialMove(-1),
+        u = getPotentialMove(1);
+    const   pmCpu = c.length ? c : [[0,-1]],
+            pmUser =u.length ? u : [[0,-1]],
+            oeCpu = getOpenEdge(pmCpu),
+            oeUser = getOpenEdge(pmUser);
 
-
-// must writing the code CPU move description 
-//    (count free boxes from last user move to nearest user's chip for each line) it's gonna be awersome =))
-function compukterMove (){
-    console.log('compukterMove2')
-    let el = (x,y) => document.getElementById(`${x}.${y}`).click();
-    let r = () =>  Math.random() > 0.5 ? 1 : -1;
-    // 1 - should create array that were has emty boxes' information
-    // 2 - check for winner position each one of it (from empties)
-    // 3 - check all rows' directions from received last user move's around 5 nearest boxes
-
-    let resCpu = moveChecker(-1);
-    let resUser = moveChecker(1);
-
-    let geoCpu = getOpenEdge(resCpu);
-    let geoUser = getOpenEdge(resUser);
-
-    let bestMove = (arr, arr2) =>{
-        let random = (argm) => Math.round(Math.random()*argm.length);
-        let openMoves = arr.map((e,i) => {
-            if (!arr2[i].includes(false)) {[e[0][3],e[0][4]]}
-        });
+    const getRandomMove = () => {
+        let i = x + r(),
+            j = y + r();
+        return isOnBoard(i,j) ? makeMove([i,j]) : getRandomMove();
+    }
     
+    if (!~pmCpu[0][1] && !~pmUser[0][1]){ return getRandomMove() }
+    return makeMove((pmCpu[0][1] >= pmUser[0][1]) ? getBestMove(pmCpu,oeCpu) : getBestMove(pmUser,oeUser));
+    
+         // takes finded potential moves & opened edges then return move's coordinates after that
+    function getBestMove (arr, arr2) {
+        const random = (ex) => Math.floor(Math.random()*ex.length);
+            // finds both sides opened edges only
+        const openMoves = arr.map((e,i) => {
+            return !arr2[i].includes(false) ? [e[0][3],e[0][4]] : 0 }).filter(el => Array.isArray(el));
         if (openMoves.length==1){ return openMoves[0]};
-        if (openMoves) {return openMoves[random(openMoves)]}
+        if (openMoves.length) {return openMoves[random(openMoves)]}
             
-        let closerMoves = arr.map(e => [e[0][3],e[0][4]]);
-        if (closerMoves.length==1){ return closerMoves[0]};
-        if (closerMoves) {
-        return closerMoves[random(closerMoves)]
-        } 
-        else return;
+        const closedMoves = arr.map(e => [e[0][3],e[0][4]]);
+        if (closedMoves.length==1){ return closedMoves[0]};
+        if (closedMoves.length) {return closedMoves[random(closedMoves)]}
+        else return getRandomMove();
     }
 
-    if (resCpu[0][1] > resUser[0][1]){
-        
 
-    } else {}
-
-            i = i + Math.round(Math.random())*r();
-            j = j + Math.round(Math.random())*r();
-            return el(i,j);
-
-                // else {
-                    // maxX = i + 5 > boardSize ? boardSize : i+5,
-                    // minX = i - 5 < 0 ? 0 : i-5;
-                    // maxY = j + 5 > boardSize ? boardSize : j+5;
-                    // minY = j - 5 < 0 ? 0 : j-5;
-                    // let k = i,
-                    //     m = j;
-                    // while(k<=maxX && hasNeighbors(k,j,1)){k++; counter++};
-                    // while(m>=minY && hasNeighbors(i,m,1)){m--; counter++};
-                    
-                    // k=i;
-                    // m=j;
-                    // while(k>=minX && hasNeighbors(x,y,1)){x--; counter++};
-                    // while(m<=maxY && hasNeighbors(x,y,1)){y++; counter++};
-                // }
-            // let en = emptyBoxes.map((e,i)=> e.map((el,ind)=>isWinPos(i,ind,1))) // cann't find winner move index
-
-
+        // checks for empty boxes on both sides of the founded potential moves
+        // it'll return arrays' array (for ex [[true , false],[true,true],[false,true]])
     function getOpenEdge (arr) {
-        let pog = []
-        arr.map(e => {
-            let ar = [];
-            let m = 1;
-            while(m<3){
-                let n = e[0][0];
-                e[0][0] = e[0][0]+`${m}`
-                ar.push(checkPosition(...e[0]));
-                m++;
-                e[0][0] = n;
-            }
-            pog.push(ar)
-        })
+        const pog = []
+        if (!!~arr[0][1]){
+            arr.map(e => {
+                const ar = [];
+                let m = 1;
+                while(m<3){
+                    let n = e[0][0];
+                    e[0][0] = e[0][0]+`${m}`
+                    ar.push(checkPosition(...e[0]));
+                    m++;
+                    e[0][0] = n;
+                }
+                pog.push(ar)
+            })
+        } else {pog[0] = [0]};
         return pog;
     }
 
-        // will return newMove(x,y) if it finds a winning position, otherwise an array with the data of open fours and open threes
-        function moveChecker (usrMv) {
-            let emptyBoxes = [];  /// 0 if it hasn't value && has a neighbor, 1 - if it has a value or hasn't any neighbor;
-            let res = [];
-            for (let i = 0, prev = 3, max = 3; i<boardSize; i++){
-                emptyBoxes[i] = [];
-                for (let j=0; j<boardSize; j++){
-                    emptyBoxes[i][j] = 0;
-                    let hN = hasNeighbors(i,j,usrMv);
-                    if (recordMoves[i][j] || hN[1][0]<2) {continue};
-                    
-                    if (isWinPos(i,j,usrMv)){return el(i,j)}
-                    else {
-                        if (hN[1][0]>=max){
-                            max = hN[1][0];
-                            if (prev < max) {res.pop(); prev = max;}
-                            res.push([[...hN[0],i,j,0],...hN[1]]);
-                        }
+        //  search for empty boxes with neighbors, check it for winning position & neighbors if it's not
+        // will return newMove(x,y) if it finds a winning position, otherwise arrays' array with the data of open threes or fours:
+        //   [[row dir, side1 count, side2 count,i,j,0], totalNeighbors];
+    function getPotentialMove (usrMv) {
+        let result = [];
+        for (let i = 0, prev = 3, max = 3; i<boardSize; i++){
+            for (let j=0; j<boardSize; j++){
+                const hN = hasNeighbors(i,j,usrMv);
+                if (recordMoves[i][j] || hN[1][0]<2) {continue}; // => filter for empty boxes with neighbors
+                if (isWinPos(i,j,usrMv)){return [[[...hN[0],i,j,0],...hN[1]]]}
+                else {
+                    if (hN[1][0]>=max){
+                        max = hN[1][0];
+                        if (prev < max) {result.pop(); prev = max;}
+                        result.push([[...hN[0],i,j,0],...hN[1]]);
+                    }
                 }
             }
         }
-        return res; 
+    return result; 
     }
 
 }

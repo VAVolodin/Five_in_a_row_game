@@ -79,7 +79,7 @@ header {
 
 .description ul li::before {
     content: "";
-    background: url(/assets/img/Blue.svg);
+    background: url(assets/img/Blue.svg);
     width: 1rem;
     height: 1rem;
     position: absolute;
@@ -90,7 +90,7 @@ header {
 }
 .description ul li::after {
     content: "";
-    background: url(/assets/img/Red.svg);
+    background: url(assets/img/Red.svg);
     width: 1rem;
     height: 1rem;
     position: absolute;
@@ -173,7 +173,7 @@ header {
 
 .mute {
     margin: 0.5vh auto 1.5vh auto;
-    background: center url(/assets/img/boardSoundOff.svg);
+    background: center url(assets/img/boardSoundOff.svg);
     width: 4vh;
     height: 4vh;
     border-radius: 100%;
@@ -182,7 +182,7 @@ header {
 
 .unmute {
     margin: 0.5vh auto 1.5vh auto;
-    background: center url(/assets/img/boardSoundOn.svg);
+    background: center url(assets/img/boardSoundOn.svg);
     width: 4vh;
     height: 4vh;
     border-radius: 100%;

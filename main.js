@@ -9,9 +9,9 @@ const
     chipColor = {"1":"Blue","-1":"Red"};
 
 const audio = {
-    Blue : new Audio('/assets/sounds/setBlueChip.mp3'),
-    Red : new Audio('/assets/sounds/setRedChip.mp3'),
-    shuffle : new Audio('/assets/sounds/chips_movement.mp3'),
+    Blue : new Audio('assets/sounds/setBlueChip.mp3'),
+    Red : new Audio('assets/sounds/setRedChip.mp3'),
+    shuffle : new Audio('assets/sounds/chips_movement.mp3'),
     reload : new Audio('assets/sounds/startBoard.mp3'),
     modal: new Audio('assets/sounds/winSound.mp3'),
 
@@ -124,7 +124,7 @@ function getChipPos(e) {
 
 function newMove (e,x,y) {
     const chip = new Image();
-    chip.src = `/assets/img/${chipColor[userMove]}.svg`;
+    chip.src = `assets/img/${chipColor[userMove]}.svg`;
     e.appendChild(chip);
     nextMoveImage.style.color = `var(--${chipColor[userMove*-1].toLowerCase()})`;
     if ( !recordMoves.filter((e) => e.some(el => el == 0)).length ) // if the board full return "draw"

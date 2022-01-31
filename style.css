@@ -24,6 +24,7 @@
 
 body {
     background: #fce3ff;
+    overflow: hidden;
 }
 
 header {

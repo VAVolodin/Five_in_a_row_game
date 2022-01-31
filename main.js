@@ -124,7 +124,7 @@ function getChipPos(e) {
 
 function newMove (e,x,y) {
     const chip = new Image();
-    chip.src = `/assets/img/${chipColor[userMove]}.svg`;
+    chip.src = `assets/img/${chipColor[userMove]}.svg`;
     e.appendChild(chip);
     nextMoveImage.style.color = `var(--${chipColor[userMove*-1].toLowerCase()})`;
     if ( !recordMoves.filter((e) => e.some(el => el == 0)).length ) // if the board full return "draw"

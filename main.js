@@ -9,11 +9,11 @@ const
     chipColor = {"1":"Blue","-1":"Red"};
 
 const audio = {
-    Blue : new Audio('/assets/sounds/setBlueChip.mp3'),
-    Red : new Audio('/assets/sounds/setRedChip.mp3'),
-    shuffle : new Audio('/assets/sounds/chips_movement.mp3'),
-    reload : new Audio('/assets/sounds/startBoard.mp3'),
-    modal: new Audio('/assets/sounds/winSound.mp3'),
+    Blue : new Audio('assets/sounds/setBlueChip.mp3'),
+    Red : new Audio('assets/sounds/setRedChip.mp3'),
+    shuffle : new Audio('assets/sounds/chips_movement.mp3'),
+    reload : new Audio('assets/sounds/startBoard.mp3'),
+    modal: new Audio('assets/sounds/winSound.mp3'),
 
     mute () {for (var i in audio) {
         audio[i].muted = !audio[i].muted;

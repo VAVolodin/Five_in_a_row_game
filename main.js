@@ -226,7 +226,7 @@ function cpuMove (x,y){
     const   
         makeMove = (arr) => setTimeout(() => {
             board.addEventListener("click", getChipPos); document.getElementById(`${arr[0]}.${arr[1]}`).click()
-        }, 1000),
+        }, 800),
         r = () =>  Math.random() > 0.5 ? 1 : -1;
     let c = getPotentialMove(-1),
         u = getPotentialMove(1);

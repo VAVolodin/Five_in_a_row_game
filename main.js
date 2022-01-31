@@ -67,7 +67,7 @@ function addElem(...props) {
 }
 
 function showModal(usrMv=userMove) {
-    audio.play(modal);
+    audio.play("modal");
     gameOver = 1;
     board.removeEventListener("click", getChipPos);
     const message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";

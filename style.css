@@ -24,7 +24,6 @@
 
 body {
     background: #fce3ff;
-    overflow: hidden;
 }
 
 header {
@@ -33,12 +32,12 @@ header {
 
 .header_wrap {
     max-width: 1120px;
-    height: 20vh;
+    height: 18vh;
     display: flex;
     flex-direction: column;
     justify-content:space-evenly;
     align-items:center;
-    margin: 1em auto;
+    margin: 0.5vh auto;
 }
 
 .header_nav-wrap {
@@ -80,7 +79,7 @@ header {
 
 .description ul li::before {
     content: "";
-    background: url(Blue.svg);
+    background: url(/assets/img/Blue.svg);
     width: 1rem;
     height: 1rem;
     position: absolute;
@@ -91,7 +90,7 @@ header {
 }
 .description ul li::after {
     content: "";
-    background: url(Red.svg);
+    background: url(/assets/img/Red.svg);
     width: 1rem;
     height: 1rem;
     position: absolute;
@@ -119,7 +118,6 @@ header {
     margin-left: 0.3em;
     border-radius: 2em;
     color: var(--blue);
-    
     box-shadow: inset 0 0 1em currentColor, 0 0 0.5em currentColor;
 }
 
@@ -166,11 +164,29 @@ header {
 }
 
 .board {
-    margin: 1em auto;
+    margin: 0 auto;
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
     position: relative;
+}
+
+.mute {
+    margin: 0.5vh auto 1.5vh auto;
+    background: center url(/assets/img/boardSoundOff.svg);
+    width: 4vh;
+    height: 4vh;
+    border-radius: 100%;
+    box-shadow: inset 0 0 0.5em #fc03b6,  0 0 0.5em #fc03b6;
+}
+
+.unmute {
+    margin: 0.5vh auto 1.5vh auto;
+    background: center url(/assets/img/boardSoundOn.svg);
+    width: 4vh;
+    height: 4vh;
+    border-radius: 100%;
+    box-shadow: inset 0 0 0.5em #2bd2ff,  0 0 0.5em #2bd2ff;
 }
 
 .board_border{
@@ -186,7 +202,7 @@ header {
     z-index: 1;
     width: 30%;
     border-radius: 0.3rem;
-    animation: myAnim 0.3s ease 0s 1 normal forwards;
+    animation: opacityAnim 0.3s ease 0s 1 normal forwards;
 }
 
 .modal_text{
@@ -202,7 +218,7 @@ header {
 .box {
     background: #fce3ff;
     box-shadow: 0 0 0.5em #c44ed1 ;
-    animation: myAnim 0.5s ease 0s 1 normal forwards;
+    animation: opacityAnim 0.5s ease-in-out 0s 1 normal forwards;
 }
 
 .box:hover,
@@ -218,26 +234,6 @@ header {
 .sink {
     animation: sink 1s ease ;
 }
-
-
-@media (max-width: 1199px) {
-    /* CSS для ширины от 992px до 1199px */
-  }
-  
-  /* md-размер (<=991px) */
-  @media (max-width: 991px) {
-    /* CSS для ширины от 768px до 991px */
-  }
-  
-  /* sm-размер (<=768px) */
-  @media (max-width: 767px) {
-    /* CSS для ширины от 576px до 767px */
-  }
-  
-  /* xs-размер (<=575px) */
-  @media (max-width: 575px) {
-    /* CSS для ширины до 575px (включительно) */
-  }
 
  /*  animation  */
 @keyframes shakeAnim {
@@ -273,7 +269,7 @@ header {
     }
 }
 
-@keyframes myAnim {
+@keyframes opacityAnim {
     0% {
         opacity: 0;
         transform:  scale(0);

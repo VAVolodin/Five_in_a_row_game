@@ -3,20 +3,38 @@ const
     header = dqs("header"),
     description = dqs(".description"),
     board = dqs(".board"),
+    muteBtn = dqs(".unmute"),
     btn = header.querySelector(".start_btn"),
     nextMoveImage = header.querySelector(".nextMove_chip"),
     chipColor = {"1":"Blue","-1":"Red"};
+
+const audio = {
+    Blue : new Audio('/assets/sounds/setBlueChip.mp3'),
+    Red : new Audio('/assets/sounds/setRedChip.mp3'),
+    shuffle : new Audio('/assets/sounds/chips_movement.mp3'),
+    reload : new Audio('assets/sounds/startBoard.mp3'),
+    modal: new Audio('assets/sounds/winSound.mp3'),
+
+    mute () {for (var i in audio) {
+        audio[i].muted = !audio[i].muted;
+    }},
+
+    play (file) { audio[file].play()},
+};
     
 let userMove = 1,
     boardSize = null,
-    recordMoves = [];
+    recordMoves = [],
+    gameOver;
 
+muteBtn.addEventListener("click", muteBoard);
 btn.addEventListener("click", restart);
 
 // Front
 
 //creating the game board
 function createBoard() {
+    gameOver = 0;
     boardSize = +dqs("#boardsize").value;
     btn.removeEventListener("click", restart);
     btn.textContent = "Restart";
@@ -49,6 +67,8 @@ function addElem(...props) {
 }
 
 function showModal(usrMv=userMove) {
+    audio.play(modal);
+    gameOver = 1;
     board.removeEventListener("click", getChipPos);
     const message = usrMv ? `${chipColor[usrMv]} chips Win!` : "It's a draw! \n Game oveR";
     addElem("board","div", "modal")
@@ -58,15 +78,17 @@ function showModal(usrMv=userMove) {
 
 function restart() {
     userMove = 1;
+    
     let delay = 0;
     description.classList.add("sink");
-    // clearing the board
     btn.removeEventListener("click", restart);
     board.removeEventListener("click", getChipPos);
     nextMoveImage.style.color = `var(--blue)`;
     const chips = Array.from(board.querySelectorAll("img"));
     chips.forEach((e) => e.classList.add("sink"));
-    if (recordMoves.filter((e) => e.some(el => el !== 0)).length ) { board.classList.add("shakeAnim"); delay=800;}
+    if (recordMoves.filter((e) => e.some(el => el !== 0)).length ) 
+        { audio.play('shuffle'); board.classList.add("shakeAnim"); delay=800;}
+        else {audio.play('reload')}
     setTimeout(() => {
         board.innerHTML = "";
         board.classList.remove("board_border");
@@ -77,35 +99,39 @@ function restart() {
         description.remove();
     }, delay);
     
-    // data clearing ?
     recordMoves = [];
-    a = [];
+}
+
+// === Audio ===
+function muteBoard() {
+    muteBtn.classList.toggle("unmute");
+    muteBtn.classList.toggle("mute");
+    audio.mute()
 }
 
 // === Back ====
 
 function getChipPos(e) {
+    audio.play(`${chipColor[userMove]}`);
     e = e.target;
-    if (!e.className || e.classList.contains("board")) {
-        return;
-    }
+    if (!e.className || e.classList.contains("board")) { return; }
     let x = +e.id.split(".")[0];
     let y = +e.id.split(".")[1];
     recordMoves[x][y] = userMove;
     newMove(e,x,y);
+    
 }
 
 function newMove (e,x,y) {
     const chip = new Image();
-
-    chip.src = `${chipColor[userMove]}.svg`;
+    chip.src = `/assets/img/${chipColor[userMove]}.svg`;
     e.appendChild(chip);
     nextMoveImage.style.color = `var(--${chipColor[userMove*-1].toLowerCase()})`;
     if ( !recordMoves.filter((e) => e.some(el => el == 0)).length ) // if the board full return "draw"
         {return showModal(0)};
     checkWin(x, y)
     userMove = -1 * userMove;
-    if (userMove<0) {compukterMove(x,y)};
+    if (userMove<0 && !gameOver) {cpuMove(x,y)};
 }
 
 function checkWin(x, y) {
@@ -195,9 +221,12 @@ function isOnBoard(x,y){
 }
 
  // CPU move description 
-function compukterMove (x,y){
+function cpuMove (x,y){
+    board.removeEventListener("click", getChipPos);
     const   
-        makeMove = (arr) => setTimeout(() => {document.getElementById(`${arr[0]}.${arr[1]}`).click()}, 300),
+        makeMove = (arr) => setTimeout(() => {
+            board.addEventListener("click", getChipPos); document.getElementById(`${arr[0]}.${arr[1]}`).click()
+        }, 1000),
         r = () =>  Math.random() > 0.5 ? 1 : -1;
     let c = getPotentialMove(-1),
         u = getPotentialMove(1);
